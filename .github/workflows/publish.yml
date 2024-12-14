@@ -1,0 +1,26 @@
+name: Publish package
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  setup-java:
+    uses: ./.github/workflows/setup-java.yml
+
+  publish:
+    needs: setup-java
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: ./gradlew build
+
+      - name: Publish to Github packages
+        run: ./gradlew publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

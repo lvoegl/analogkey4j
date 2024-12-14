@@ -1,0 +1,24 @@
+name: Run Tests with Gradle
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup-java:
+    uses: ./.github/workflows/setup-java.yml
+
+  test:
+    needs: setup-java
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run tests with Gradle
+        run: ./gradlew test
