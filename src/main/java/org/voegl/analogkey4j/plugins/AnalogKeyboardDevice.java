@@ -12,7 +12,7 @@ import org.voegl.analogkey4j.parser.HidParser;
  * Provides an abstract implementation for an analog keyboard plugin. It provides generic methods to
  * interact with analog keyboard, such as opening, reading and closing.
  */
-public abstract class AnalogKeyboardPlugin {
+public abstract class AnalogKeyboardDevice {
   @Getter protected final HidDevice device;
   private final AnalogKeyboardListenerList listeners;
   /* NOTE: this may not always be 48 byte */
@@ -28,7 +28,7 @@ public abstract class AnalogKeyboardPlugin {
    * @param parser A parser specific to this device.
    * @param listeners Event listeners listening for device changes.
    */
-  public AnalogKeyboardPlugin(
+  public AnalogKeyboardDevice(
       HidDevice device, HidParser parser, AnalogKeyboardListenerList listeners) {
     this.device = device;
     this.parser = parser;
@@ -51,7 +51,7 @@ public abstract class AnalogKeyboardPlugin {
         switch (val) {
           case -1:
             // error
-            listeners.fireKeyboardError(device, device.getLastErrorMessage());
+            listeners.fireKeyboardError(this, device.getLastErrorMessage());
             break;
           case 0:
             // nothing to read
@@ -59,12 +59,12 @@ public abstract class AnalogKeyboardPlugin {
           default:
             // read success
             Set<AnalogKeyState> keyStates = parser.parse(data, val);
-            listeners.fireKeyPressed(device, keyStates);
+            listeners.fireKeyPressed(this, keyStates);
             break;
         }
       }
       device.close();
-      listeners.fireKeyboardClosed(device);
+      listeners.fireKeyboardClosed(this);
     };
   }
 
@@ -93,7 +93,7 @@ public abstract class AnalogKeyboardPlugin {
     readThread.setDaemon(true);
     readThread.setName("analog keyboard reader");
     readThread.start();
-    listeners.fireKeyboardOpened(device);
+    listeners.fireKeyboardOpened(this);
   }
 
   /**
@@ -108,6 +108,42 @@ public abstract class AnalogKeyboardPlugin {
   }
 
   /**
+   * Gets the vendor id of the HID device.
+   *
+   * @return The vendor id of this device.
+   */
+  public int getVendorId() {
+    return device.getVendorId();
+  }
+
+  /**
+   * Gets the product id of the HID device.
+   *
+   * @return The product id of this device.
+   */
+  public int getProductId() {
+    return device.getProductId();
+  }
+
+  /**
+   * Gets the usage page of the HID device.
+   *
+   * @return The usage page of this device.
+   */
+  public int getUsagePage() {
+    return device.getUsagePage();
+  }
+
+  /**
+   * Gets the serial number of the HID device.
+   *
+   * @return The serial number of this device.
+   */
+  public String getSerialNumber() {
+    return device.getSerialNumber();
+  }
+
+  /**
    * Checks if the keyboard's HID device matches a keyboard supported by this plugin.
    *
    * @return {@code true} if the device is a supported keyboard, {@code false} otherwise.
@@ -117,7 +153,7 @@ public abstract class AnalogKeyboardPlugin {
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;
-    AnalogKeyboardPlugin that = (AnalogKeyboardPlugin) o;
+    AnalogKeyboardDevice that = (AnalogKeyboardDevice) o;
     return Objects.equals(device, that.device);
   }
 

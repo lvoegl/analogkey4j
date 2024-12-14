@@ -8,7 +8,7 @@ import org.hid4java.HidDevice;
 import org.junit.jupiter.api.Test;
 import org.voegl.analogkey4j.event.AnalogKeyboardListenerList;
 
-class WootingPluginTests {
+class WootingDeviceTests {
 
   private AnalogKeyboardListenerList LISTENER_MOCK = mock(AnalogKeyboardListenerList.class);
 
@@ -24,7 +24,7 @@ class WootingPluginTests {
   @Test
   void testIsResponsibleFor80HE() {
     HidDevice w80he = createMockDevice(0x31e3, 0x1402, 0xffffff54);
-    WootingPlugin plugin = new WootingPlugin(w80he, LISTENER_MOCK);
+    WootingDevice plugin = new WootingDevice(w80he, LISTENER_MOCK);
 
     assertThat(plugin.isResponsible()).isTrue();
   }
@@ -32,7 +32,7 @@ class WootingPluginTests {
   @Test
   void testIsResponsibleForRandomVendor() {
     HidDevice device = createMockDevice(0x12a5, 0x1402, 0xffffff54);
-    WootingPlugin plugin = new WootingPlugin(device, LISTENER_MOCK);
+    WootingDevice plugin = new WootingDevice(device, LISTENER_MOCK);
 
     assertThat(plugin.isResponsible()).isFalse();
   }
@@ -40,7 +40,7 @@ class WootingPluginTests {
   @Test
   void testIsResponsibleForRandomProduct() {
     HidDevice device = createMockDevice(0x31e3, 0xb513, 0xffffff54);
-    WootingPlugin plugin = new WootingPlugin(device, LISTENER_MOCK);
+    WootingDevice plugin = new WootingDevice(device, LISTENER_MOCK);
 
     assertThat(plugin.isResponsible()).isFalse();
   }
@@ -48,7 +48,7 @@ class WootingPluginTests {
   @Test
   void testIsResponsibleForRandomUsage() {
     HidDevice device = createMockDevice(0x31e3, 0x1402, 0x89e);
-    WootingPlugin plugin = new WootingPlugin(device, LISTENER_MOCK);
+    WootingDevice plugin = new WootingDevice(device, LISTENER_MOCK);
 
     assertThat(plugin.isResponsible()).isFalse();
   }

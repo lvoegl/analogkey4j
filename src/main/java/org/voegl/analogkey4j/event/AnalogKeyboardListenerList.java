@@ -5,13 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.hid4java.HidDevice;
+import org.voegl.analogkey4j.AnalogKeyboardManager;
+import org.voegl.analogkey4j.plugins.AnalogKeyboardDevice;
 
 /**
  * A manager handling all listeners subscribed to any analog keyboard events. Library users should
- * use the add and remove listener function provided in {@link
- * org.voegl.analogkey4j.AnalogPluginManager}. It can fire events in a non-blocking way by using an
- * {@link ExecutorService}.
+ * use the add and remove listener function provided in {@link AnalogKeyboardManager}. It can fire
+ * events in a non-blocking way by using an {@link ExecutorService}.
  */
 public class AnalogKeyboardListenerList {
   private final Set<AnalogKeyboardListener> listeners =
@@ -50,7 +50,7 @@ public class AnalogKeyboardListenerList {
    *
    * @param hidDevice The devices that is added.
    */
-  public void fireKeyboardAdded(HidDevice hidDevice) {
+  public void fireKeyboardAdded(AnalogKeyboardDevice hidDevice) {
     executorService.submit(() -> listeners.forEach(listener -> listener.keyboardAdded(hidDevice)));
   }
 
@@ -59,7 +59,7 @@ public class AnalogKeyboardListenerList {
    *
    * @param hidDevice The devices that is removed.
    */
-  public void fireKeyboardRemoved(HidDevice hidDevice) {
+  public void fireKeyboardRemoved(AnalogKeyboardDevice hidDevice) {
     executorService.submit(
         () -> listeners.forEach(listener -> listener.keyboardRemoved(hidDevice)));
   }
@@ -69,7 +69,7 @@ public class AnalogKeyboardListenerList {
    *
    * @param hidDevice The devices that is opened.
    */
-  public void fireKeyboardOpened(HidDevice hidDevice) {
+  public void fireKeyboardOpened(AnalogKeyboardDevice hidDevice) {
     executorService.submit(() -> listeners.forEach(listener -> listener.keyboardOpened(hidDevice)));
   }
 
@@ -78,7 +78,7 @@ public class AnalogKeyboardListenerList {
    *
    * @param hidDevice The devices that is closed.
    */
-  public void fireKeyboardClosed(HidDevice hidDevice) {
+  public void fireKeyboardClosed(AnalogKeyboardDevice hidDevice) {
     executorService.submit(() -> listeners.forEach(listener -> listener.keyboardClosed(hidDevice)));
   }
 
@@ -88,7 +88,7 @@ public class AnalogKeyboardListenerList {
    * @param hidDevice The devices for which an error has occurred.
    * @param message The error message.
    */
-  public void fireKeyboardError(HidDevice hidDevice, String message) {
+  public void fireKeyboardError(AnalogKeyboardDevice hidDevice, String message) {
     executorService.submit(
         () -> listeners.forEach(listener -> listener.keyboardError(hidDevice, message)));
   }
@@ -99,7 +99,7 @@ public class AnalogKeyboardListenerList {
    * @param hidDevice The device which the key belongs to.
    * @param states The keys and corresponding states that have changed.
    */
-  public void fireKeyPressed(HidDevice hidDevice, Set<AnalogKeyState> states) {
+  public void fireKeyPressed(AnalogKeyboardDevice hidDevice, Set<AnalogKeyState> states) {
     executorService.submit(
         () ->
             listeners.forEach(

@@ -12,19 +12,19 @@ import org.hid4java.HidServicesSpecification;
 import org.hid4java.event.HidServicesEvent;
 import org.voegl.analogkey4j.event.AnalogKeyboardListener;
 import org.voegl.analogkey4j.event.AnalogKeyboardListenerList;
-import org.voegl.analogkey4j.plugins.AnalogKeyboardPlugin;
-import org.voegl.analogkey4j.plugins.AnalogKeyboardPluginUtil;
+import org.voegl.analogkey4j.plugins.AnalogKeyboardDevice;
+import org.voegl.analogkey4j.plugins.AnalogKeyboardDeviceUtil;
 
 /**
  * Manages analog keyboard devices, including starting, stopping, and monitoring their activity. It
  * listens for HID device events and interacts with the devices accordingly, managing a list of
  * active supported analog keyboards.
  */
-public class AnalogPluginManager implements HidServicesListener {
+public class AnalogKeyboardManager implements HidServicesListener {
 
   private final AnalogKeyboardListenerList listeners = new AnalogKeyboardListenerList();
   private HidServices hidServices;
-  @Getter private final Set<AnalogKeyboardPlugin> keyboardDevices = new HashSet<>();
+  @Getter private final Set<AnalogKeyboardDevice> keyboardDevices = new HashSet<>();
 
   /**
    * Starts the HidServices and initializes attached devices. This method configures the HID
@@ -40,8 +40,8 @@ public class AnalogPluginManager implements HidServicesListener {
     hidServices.start();
 
     for (HidDevice hidDevice : hidServices.getAttachedHidDevices()) {
-      Optional<AnalogKeyboardPlugin> keyboardDevice =
-          AnalogKeyboardPluginUtil.getAvailablePlugin(hidDevice, listeners);
+      Optional<AnalogKeyboardDevice> keyboardDevice =
+          AnalogKeyboardDeviceUtil.getAvailablePlugin(hidDevice, listeners);
       keyboardDevice.ifPresent(keyboardDevices::add);
     }
   }
@@ -52,7 +52,7 @@ public class AnalogPluginManager implements HidServicesListener {
    */
   public void stop() {
     // close all unclosed devices
-    for (AnalogKeyboardPlugin device : keyboardDevices) {
+    for (AnalogKeyboardDevice device : keyboardDevices) {
       if (!device.isReadDone() && !device.isClosed()) {
         device.close();
       }
@@ -76,9 +76,9 @@ public class AnalogPluginManager implements HidServicesListener {
     }
 
     // manually send removed events
-    for (AnalogKeyboardPlugin keyboardDevice : keyboardDevices) {
+    for (AnalogKeyboardDevice keyboardDevice : keyboardDevices) {
       keyboardDevices.remove(keyboardDevice);
-      listeners.fireKeyboardRemoved(keyboardDevice.getDevice());
+      listeners.fireKeyboardRemoved(keyboardDevice);
     }
 
     hidServices.stop();
@@ -110,11 +110,11 @@ public class AnalogPluginManager implements HidServicesListener {
    */
   @Override
   public void hidDeviceAttached(HidServicesEvent event) {
-    Optional<AnalogKeyboardPlugin> optionalKeyboard =
-        AnalogKeyboardPluginUtil.getAvailablePlugin(event.getHidDevice(), listeners);
+    Optional<AnalogKeyboardDevice> optionalKeyboard =
+        AnalogKeyboardDeviceUtil.getAvailablePlugin(event.getHidDevice(), listeners);
     if (optionalKeyboard.isPresent()) {
-      AnalogKeyboardPlugin keyboard = optionalKeyboard.get();
-      listeners.fireKeyboardAdded(keyboard.getDevice());
+      AnalogKeyboardDevice keyboard = optionalKeyboard.get();
+      listeners.fireKeyboardAdded(keyboard);
       keyboardDevices.add(keyboard);
     }
   }
@@ -127,13 +127,13 @@ public class AnalogPluginManager implements HidServicesListener {
    */
   @Override
   public void hidDeviceDetached(HidServicesEvent event) {
-    for (AnalogKeyboardPlugin keyboardDevice : keyboardDevices) {
+    for (AnalogKeyboardDevice keyboardDevice : keyboardDevices) {
       if (keyboardDevice.isResponsible()) {
         if (!keyboardDevice.isClosed()) {
           keyboardDevice.close();
         }
         keyboardDevices.remove(keyboardDevice);
-        listeners.fireKeyboardRemoved(keyboardDevice.getDevice());
+        listeners.fireKeyboardRemoved(keyboardDevice);
       }
     }
   }
@@ -146,8 +146,17 @@ public class AnalogPluginManager implements HidServicesListener {
    */
   @Override
   public void hidFailure(HidServicesEvent event) {
-    HidDevice keyboard = event.getHidDevice();
-    listeners.fireKeyboardError(keyboard, keyboard.getLastErrorMessage());
+    AnalogKeyboardDevice plugin = null;
+    for (AnalogKeyboardDevice savedPlugins : keyboardDevices) {
+      if (savedPlugins.getDevice().equals(event.getHidDevice())) {
+        plugin = savedPlugins;
+        break;
+      }
+    }
+
+    if (plugin != null) {
+      listeners.fireKeyboardError(plugin, event.getHidDevice().getLastErrorMessage());
+    }
   }
 
   /**

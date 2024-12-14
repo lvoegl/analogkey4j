@@ -4,16 +4,16 @@ import java.util.Optional;
 import java.util.Set;
 import org.hid4java.HidDevice;
 import org.voegl.analogkey4j.event.AnalogKeyboardListenerList;
-import org.voegl.analogkey4j.plugins.wooting.WootingPlugin;
+import org.voegl.analogkey4j.plugins.wooting.WootingDevice;
 
 /**
  * A utility class for managing available analog keyboard plugins. This class is responsible for
  * detecting compatible devices and selecting the appropriate plugin to manage them.
  */
-public class AnalogKeyboardPluginUtil {
+public class AnalogKeyboardDeviceUtil {
 
   /** Class must not be instantiated. */
-  private AnalogKeyboardPluginUtil() {
+  private AnalogKeyboardDeviceUtil() {
     throw new UnsupportedOperationException();
   }
 
@@ -24,9 +24,9 @@ public class AnalogKeyboardPluginUtil {
    * @param listeners A list of listeners that will be notified of events related to the devices.
    * @return A set of analog keyboard plugins that correspond to the given HID device.
    */
-  private static Set<AnalogKeyboardPlugin> getDevices(
+  private static Set<AnalogKeyboardDevice> getDevices(
       HidDevice device, AnalogKeyboardListenerList listeners) {
-    return Set.of(new WootingPlugin(device, listeners));
+    return Set.of(new WootingDevice(device, listeners));
   }
 
   /**
@@ -38,10 +38,10 @@ public class AnalogKeyboardPluginUtil {
    * @return An {@link Optional} containing the first responsible analog keyboard device, or an
    *     empty {@link Optional} if no compatible plugin is found.
    */
-  public static Optional<AnalogKeyboardPlugin> getAvailablePlugin(
+  public static Optional<AnalogKeyboardDevice> getAvailablePlugin(
       HidDevice device, AnalogKeyboardListenerList listeners) {
     return getDevices(device, listeners).stream()
-        .filter(AnalogKeyboardPlugin::isResponsible)
+        .filter(AnalogKeyboardDevice::isResponsible)
         .findFirst();
   }
 }
