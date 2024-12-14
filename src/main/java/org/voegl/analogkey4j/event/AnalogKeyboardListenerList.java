@@ -5,12 +5,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.voegl.analogkey4j.AnalogKeyboardManager;
 import org.voegl.analogkey4j.plugins.AnalogKeyboardDevice;
 
 /**
  * A manager handling all listeners subscribed to any analog keyboard events. Library users should
- * use the add and remove listener function provided in {@link AnalogKeyboardManager}. It can fire
+ * use the add and remove listener function provided in {@link HidServicesListenerImpl}. It can fire
  * events in a non-blocking way by using an {@link ExecutorService}.
  */
 public class AnalogKeyboardListenerList {
