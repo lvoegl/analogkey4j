@@ -15,7 +15,11 @@ import org.voegl.analogkey4j.plugins.SimpleAnalogKeyboard;
 public class WootingDevice extends AnalogKeyboardDevice {
 
   private static final Set<SimpleAnalogKeyboard> KEYBOARDS =
-      Set.of(new SimpleAnalogKeyboard("Wooting 80HE", 0x31e3, 0x1402, 0xffffff54));
+      Set.of(
+          new SimpleAnalogKeyboard("Wooting 60HE", 0x31e3, 0x1312, 0xffffff54),
+          new SimpleAnalogKeyboard("Wooting 80HE", 0x31e3, 0x1402, 0xffffff54),
+          new SimpleAnalogKeyboard("Wooting Two Legacy", 0x03eb, 0xff02, 0xffffff54),
+          new SimpleAnalogKeyboard("Wooting One Legacy", 0x03eb, 0xff01, 0xffffff54));
   private static final HidParser PARSER = new HidParser(HidKeyMap.getInstance());
 
   /**
