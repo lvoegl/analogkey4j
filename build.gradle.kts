@@ -9,8 +9,8 @@ plugins {
 group = "org.voegl.analogkey4j"
 version = "0.0.1"
 
-java.sourceCompatibility = JavaVersion.VERSION_21
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 
 repositories {
     mavenCentral()
