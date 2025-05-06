@@ -126,7 +126,7 @@ public class HidServicesListenerImpl implements HidServicesListener {
   @Override
   public void hidDeviceDetached(HidServicesEvent event) {
     for (AnalogKeyboardDevice keyboardDevice : keyboardDevices) {
-      if (keyboardDevice.isResponsible()) {
+      if (keyboardDevice.getDevice().equals(event.getHidDevice())) {
         if (!keyboardDevice.isClosed()) {
           keyboardDevice.close();
         }
