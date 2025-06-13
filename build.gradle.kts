@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "org.voegl.analogkey4j"
-version = "0.0.3"
+version = "0.0.4"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
