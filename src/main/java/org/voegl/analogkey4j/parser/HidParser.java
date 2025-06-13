@@ -31,7 +31,7 @@ public class HidParser {
    *
    * @param states The already parsed states from the current message.
    */
-  private void resetLastKeys(Set<AnalogKeyState> states) {
+  private synchronized void resetLastKeys(Set<AnalogKeyState> states) {
     Set<HidKey> keys = new HashSet<>();
     for (AnalogKeyState state : states) {
       keys.add(state.key());
@@ -51,7 +51,7 @@ public class HidParser {
    * @param len The length of the HID message.
    * @return A {@link Set} of {@link AnalogKeyState} which have changed.
    */
-  public Set<AnalogKeyState> parse(byte[] data, int len) {
+  public synchronized Set<AnalogKeyState> parse(byte[] data, int len) {
     Set<AnalogKeyState> states = new HashSet<>();
 
     for (int i = 0; i < len - 2; i += 3) {
