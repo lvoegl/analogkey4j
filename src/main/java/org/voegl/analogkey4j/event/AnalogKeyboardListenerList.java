@@ -17,11 +17,10 @@ public class AnalogKeyboardListenerList {
       Collections.synchronizedSet(new HashSet<>());
 
   private final ExecutorService executorService =
-      Executors.newFixedThreadPool(
-          3,
+      Executors.newSingleThreadExecutor(
           runnable -> {
             Thread thread = Executors.defaultThreadFactory().newThread(runnable);
-            thread.setName("analog keyboard event thread");
+            thread.setName("Analog keyboard event thread");
             thread.setDaemon(true);
             return thread;
           });
